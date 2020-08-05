@@ -1,59 +1,40 @@
 const express = require("express");
+const Jobs = require("./jobScript");
 
 const app = express();
 const port = 9000;
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
+  const jobs = await Jobs.getJobs();
+  res.json(jobs);
+});
+
+app.get("/test", (req, res) => {
   const puppeteer = require("puppeteer");
   (async () => {
     const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
-    const navigationPromise = page.waitForNavigation();
-
-    await page.goto("http://masteringbackend.herokuapp.com/");
+    await page.goto(
+      "https://www.google.com/search?q=what+is+puppeteer+js&oq=wh&aqs=chrome.0.69i59j69i64j0l3j5l3.7647j0j7&sourceid=chrome&ie=UTF-8"
+    );
 
     await page.setViewport({ width: 1366, height: 669 });
 
-    await navigationPromise;
+    await page.waitForSelector(
+      ".g:nth-child(3) > .rc:nth-child(1) > .r > a > .LC20lb"
+    );
+    await page.click(".g:nth-child(3) > .rc:nth-child(1) > .r > a > .LC20lb");
 
     await page.waitForSelector(
-      ".container > #navbarSupportedContent > .navbar-nav > .nav-item:nth-child(2) > .nav-link"
+      ".blog_post-main_content > .blog_post-body > .blog_post_body > p > a:nth-child(3)"
     );
     await page.click(
-      ".container > #navbarSupportedContent > .navbar-nav > .nav-item:nth-child(2) > .nav-link"
-    );
-
-    await navigationPromise;
-
-    await page.waitForSelector(
-      ".card:nth-child(2) > .card-header > .card-title > h3 > .title"
-    );
-    await page.click(
-      ".card:nth-child(2) > .card-header > .card-title > h3 > .title"
-    );
-
-    await navigationPromise;
-
-    await page.waitForSelector(
-      ".container > #navbarSupportedContent > .navbar-nav > .nav-item:nth-child(4) > .nav-link"
-    );
-    await page.click(
-      ".container > #navbarSupportedContent > .navbar-nav > .nav-item:nth-child(4) > .nav-link"
-    );
-
-    await navigationPromise;
-
-    await page.waitForSelector(
-      ".container > #navbarSupportedContent > .navbar-nav > .nav-item:nth-child(5) > .nav-link"
-    );
-    await page.click(
-      ".container > #navbarSupportedContent > .navbar-nav > .nav-item:nth-child(5) > .nav-link"
+      ".blog_post-main_content > .blog_post-body > .blog_post_body > p > a:nth-child(3)"
     );
 
     await browser.close();
   })();
-  // res.send("hello world!");
 });
 
 app.listen(port, () => {});
